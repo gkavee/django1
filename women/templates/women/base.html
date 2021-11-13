@@ -1,0 +1,79 @@
+{% load static %}
+{% load women_tags %}
+{% load cache %}
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>{{title}}</title>
+      <link type="text/css" href="{% static 'women/css/styles.css' %}" rel="stylesheet" />
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <link rel="shortcut icon" href="{% static 'women/images/main.ico' %}" type="image/x-icon"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   </head>
+   <body>
+      <table class="table-page" border=0 cellpadding="0" cellspacing="0">
+         <tr>
+            <td valign=top>
+               <div class="header">
+                  <ul id="mainmenu" class="mainmenu">
+                     <li class="logo">
+                        <a href="{% url 'home' %}">
+                           <div class="logo"></div>
+                        </a>
+                     </li>
+                     {% menu %}
+                  </ul>
+                  <div class="clear"></div>
+               </div>
+               <table class="table-content" border=0 cellpadding="0" cellspacing="0">
+                  <tr>
+                     <td valign="top" class="left-chapters">
+                        <ul id="leftchapters">
+                           {% cache 60 sidebar%}
+                           {% if cat_selected == 0 %}
+                           <li class="selected">Все категории</li>
+                           {% else %}
+                           <li><a href="{% url 'home' %}">Все категории</a></li>
+                           {% endif %}
+                           {% show_categories cat_selected=cat_selected %}
+                        </ul>
+                     </td>
+                     {% endcache %}
+                     <td valign="top" class="content">
+                        <div class="content-text">
+                           {% block content %}
+                           {% endblock %}
+                           {% if page_obj.has_other_pages %}
+                           <nav class="list-pages">
+                              <ul>
+                                 {% if page_obj.has_previous %}
+                                 <li class="page-num">
+                                    <a href="?page={{ page_obj.previous_page_number }}">&lt;</a>
+                                 </li>
+                                 {% endif %}
+                                 {% for p in paginator.page_range %}
+                                 {% if page_obj.number == p %}
+                                 <li class="page-num page-num-selected">{{ p }}</li>
+                                 {% elif p >= page_obj.number|add:-3 and p <= page_obj.number|add:3  %}
+                                 <li class="page-num">
+                                    <a href="?page={{ p }}">{{ p }}</a>
+                                 </li>
+                                 {% endif %}
+                                 {% endfor %}
+                                 {% if page_obj.has_next %}
+                                 <li class="page-num">
+                                    <a href="?page={{ page_obj.next_page_number }}">&gt;</a>
+                                 </li>
+                                 {% endif %}
+                              </ul>
+                           </nav>
+                           {% endif %}
+                        </div>
+                     </td>
+                  </tr>
+               </table>
+            </td>
+         </tr>
+      </table>
+   </body>
+</html>
